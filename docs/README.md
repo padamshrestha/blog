@@ -5,13 +5,13 @@ actionText: Getting Started →
 actionLink: /guide/
 features:
   - title: Angular
-    details: Angular specific posts.
+    details:
   - title: React
-    details: React specific posts.
+    details:
   - title: Web API
-    details: Web API specific posts.
+    details:
   - title: Azure Functions
-    details: Azure Function specific posts.
+    details:
 
 footer: Copyright © 2019
 ---
