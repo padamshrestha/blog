@@ -2,6 +2,17 @@ module.exports = {
   title: 'PS (Notes)',
   description: 'Find all my notes here',
   base: '/blog/',
+  head: [
+    [
+      'link',
+      {
+        rel: 'icon',
+        type: 'image/png',
+        sizes: '32x32',
+        href: '/assets/img/favicon.png',
+      },
+    ],
+  ],
   themeConfig: {
     //repo: 'padamshrestha/blog',
     docsDir: 'docs',
