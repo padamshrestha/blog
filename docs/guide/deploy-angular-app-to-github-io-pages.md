@@ -26,4 +26,4 @@ npx angular-cli-ghpages --dir=dist/apps/<appname>
 ```
 
 Change repo setting to use gh-pages:
-![image ghpages](/gh-pages.jpg)
+![image ghpages](/images/gh-pages.jpg)

@@ -1,13 +1,13 @@
 {
-  "name": "@padamshrestha/notes",
+  "name": "@padamshrestha/blog",
   "version": "1.0.0",
-  "description": "Personal blog/notes",
+  "description": "Personal blog/blog",
   "repository": {
     "type": "git",
-    "url": "padamshrestha/notes"
+    "url": "padamshrestha/blog"
   },
   "license": "MIT",
-  "author": "padamshre@gmail.com>",
+  "author": "padamshre@gmail.com",
   "files": [
     "lib",
     "types"
