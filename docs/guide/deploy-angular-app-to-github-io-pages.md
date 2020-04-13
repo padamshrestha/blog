@@ -1,6 +1,6 @@
 # Deploy Angular app to github.io pages
 
-Create application using angular-cli ...
+Create application using angular-cli ....
 
 ```
 npm install -g @angular/cli
