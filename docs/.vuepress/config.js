@@ -1,9 +1,9 @@
 module.exports = {
   title: 'PS (Notes)',
   description: 'Find all my notes here',
-  base: '/blog',
+  base: '/blog/',
   themeConfig: {
-    repo: 'padamshrestha/notes',
+    //repo: 'padamshrestha/blog',
     docsDir: 'docs',
     editLinks: true,
     editLinkText: 'Edit this page on GitHub',
