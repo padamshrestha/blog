@@ -19,19 +19,21 @@ module.exports = {
     editLinks: true,
     editLinkText: 'Edit this page on GitHub',
     nav: [
-      { text: 'Guide', link: '/guide/' },
+      { text: 'Home', link: '/home/' },
       { text: 'About', link: '/about/' },
     ],
     sidebarDepth: 3,
     sidebar: {
-      '/guide/': [
+      '/home/': [
         {
-          title: 'Guide',
+          title: 'Home',
           collapsable: false,
 
-          children: ['', 'deploy-angular-app-to-github-io-pages'],
+          children: ['', 'deploy-angular-app-to-github-io-pages', 'azure-resource-graph-explorer'],
         },
       ],
+
+      '/': [''],
     },
     smoothScroll: true,
   },

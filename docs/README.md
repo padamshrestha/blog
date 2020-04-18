@@ -1,8 +1,9 @@
 ---
 home: true
+sidebar: auto
 heroImage:
 actionText: Getting Started →
-actionLink: /guide/
+actionLink: /home/
 features:
   - title: Angular
     details:
@@ -15,3 +16,5 @@ features:
 
 footer: Copyright © 2019
 ---
+
+Home page
