@@ -23,18 +23,44 @@ module.exports = {
       { text: 'About', link: '/about/' },
     ],
     sidebarDepth: 3,
-    sidebar: {
-      '/home/': [
+    sidebar:
+      [
         {
-          title: 'Home',
+          title: 'Angular',
           collapsable: false,
 
-          children: ['', 'deploy-angular-app-to-github-io-pages', 'azure-resource-graph-explorer'],
+          children: [
+            '/home/deploy-angular-app-to-github-io-pages',
+          ],
+        },
+        {
+          title: 'Azure',
+          collapsable: false,
+
+          children: [
+            '/home/azure-resource-graph-explorer',
+            '/home/azure-keyboard-shortcuts'
+          ],
+        },
+        {
+          title: 'C#',
+          collapsable: false,
+
+          children: [
+            '/csharp/csharp-fundamentals',
+          ],
         },
       ],
 
-      '/': [''],
-    },
+
     smoothScroll: true,
   },
+  plugins: [
+    [
+      '@vuepress/google-analytics',
+      {
+        ga: 'G-ZM9XV2Y5TP' // UA-00000000-0
+      }
+    ],
+  ]
 };
