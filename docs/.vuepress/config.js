@@ -62,5 +62,6 @@ module.exports = {
         ga: 'G-ZM9XV2Y5TP' // UA-00000000-0
       }
     ],
+    '@vuepress/nprogress'
   ]
 };
