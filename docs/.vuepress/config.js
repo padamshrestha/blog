@@ -48,6 +48,7 @@ module.exports = {
 
           children: [
             '/csharp/csharp-fundamentals',
+            '/csharp/csharp-features'
           ],
         },
       ],
