@@ -44,15 +44,31 @@ ActivityVector provide the sequence of execution for Async calls so it's helpful
 :::
 
 ::: tip Apps
-* Schedular for scheduling interviews and stuff
-* Attract
-
+* Go1Adapter.sln
+* XRMSolutions.sln
+* TalentEngagementServiceApp.sln (Attract Service)
+* SchedulingServiceApp.sln (Schedular for scheduling interviews and stuff)
+* OfferManagementService.sln
+* JobPostingServiceApp.sln
+* OnboardingServiceApp.sln
+* ProvisioningServiceApp.sln
+* FlightingServiceApp.sln
+All services are in D365
 :::
+
+## TODO
+* Service Fabric and service app
 
 ## Kusto Environment
 ![Demo](./../images/kusto_troubleshooting.png)
 
 ## ICM Query
+[ICM link](https://aka.ms/ICM)
 ![ICM QUery](./../images/Icm_Query.png)
+
+## Attract
+![Attract](./../images/Attract.png)
+
+
 
 

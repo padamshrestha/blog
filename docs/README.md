@@ -1,20 +1,18 @@
----
-home: true
-sidebar: auto
-heroImage:
-actionText: Getting Started →
-actionLink: /home/
-features:
-  - title: Angular
-    details:
-  - title: React
-    details:
-  - title: Web API
-    details:
-  - title: Azure Functions
-    details:
 
-footer: Copyright © 2019
----
 
-Home page
+# Welcome
+
+Welcome to my blog. It's a collection of tutorials, how tos and ideas from everyday while solving problem at  work.
+
+## Post or contest are grouped as appropriate
+* Angular
+* React
+* Web API
+* Azure Functions
+* Kusto
+
+::: Tip
+:bulb: Try searching the post your are looking for.
+:::
+
+
