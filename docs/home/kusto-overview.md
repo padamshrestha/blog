@@ -5,7 +5,7 @@ Official documentation
 Course
 [Pluralsight course](https://app.pluralsight.com/library/courses/kusto-query-language-kql-from-scratch/table-of-contents)
 
-## what is KQL and where is it used?
+**what is KQL and where is it used?**
 KQL is an open source language created by Microsoft to query big data sets stored in the Azure cloud. These queries can also be used in alerting rules. Some examples of services/products hosted in Azure that make use of KQL are:
 * Azure Data Explorer
 * Log Analytics

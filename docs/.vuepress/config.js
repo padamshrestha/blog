@@ -47,7 +47,8 @@ module.exports = {
           collapsable: false,
 
           children: [
-            '/home/kusto-overview'
+            '/home/kusto-overview',
+            '/home/dynamic-365-hcm-kusto'
           ],
         },
         {
