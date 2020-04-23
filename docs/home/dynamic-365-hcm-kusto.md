@@ -28,10 +28,31 @@ TraceEvent
 | where RootActivityId = ""
 ```
 
-ActivityVector provide the sequence of exectution for Async calls so it's helpful on bulding the call stack during investigation
+ActivityVector provide the sequence of execution for Async calls so it's helpful on building the call stack during investigation
 
+::: tip
+:bulb: Notes
+* Leverage TraceEvent not just ClientEvents using raid/session id etc
+* Leverage activity vector, activity type, application, service
+* Use custom dimensions when needed
+* Use status app for environment details, tenant details, user information
+* Use tsg/wiki - all possible exception are there so search for it
+* xrm exceptions - there is an amazing wiki - use that (xrm is on top of CDS)
+* Play with product to understand how something should work
+* Big picture - don't focus on just one issue what is reported - offer example
+* repro - last thing to do 
+:::
 
+::: tip Apps
+* Schedular for scheduling interviews and stuff
+* Attract
 
+:::
+
+## Kusto Environment
 ![Demo](./../images/kusto_troubleshooting.png)
+
+## ICM Query
+![ICM QUery](./../images/Icm_Query.png)
 
 

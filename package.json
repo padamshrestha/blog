@@ -8,11 +8,11 @@
   },
   "license": "MIT",
   "author": "padamshre@gmail.com",
+  "main": "lib/node/index.js",
   "files": [
     "lib",
     "types"
   ],
-  "main": "lib/node/index.js",
   "scripts": {
     "build": "concurrently \"rimraf lib\" \"npm:build:client\" \"npm:build:node\" \"npm:build:components\"",
     "build:client": "tsc -p tsconfig.client.json",
@@ -62,6 +62,7 @@
     "@typescript-eslint/eslint-plugin": "^2.11.0",
     "@typescript-eslint/parser": "^2.11.0",
     "@vuepress/plugin-google-analytics": "^1.4.1",
+    "@vuepress/plugin-medium-zoom": "^1.4.1",
     "@vuepress/plugin-nprogress": "^1.4.1",
     "babel-eslint": "^10.0.3",
     "concurrently": "^4.1.0",
