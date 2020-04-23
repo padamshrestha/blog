@@ -43,6 +43,14 @@ module.exports = {
           ],
         },
         {
+          title: 'Kusto',
+          collapsable: false,
+
+          children: [
+            '/home/kusto-overview'
+          ],
+        },
+        {
           title: 'C#',
           collapsable: false,
 
