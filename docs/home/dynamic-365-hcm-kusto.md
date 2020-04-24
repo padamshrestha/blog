@@ -28,6 +28,12 @@ TraceEvent
 | where RootActivityId = ""
 ```
 
+```
+TraceEvent
+| where SessionId == ""
+| project TIMESTAMP, RootActivityId, ActivityType, ActivityVector, TraceLevel, TraceMessage
+```
+
 ActivityVector provide the sequence of execution for Async calls so it's helpful on building the call stack during investigation
 
 ::: tip
@@ -55,6 +61,15 @@ ActivityVector provide the sequence of execution for Async calls so it's helpful
 * FlightingServiceApp.sln
 All services are in D365
 :::
+
+## Resources/links
+* https://attract.talent.dev.dynamics.com
+* https://dataexplorer.azure.com/* 
+* https://kusto.azurewebsites.net/docs/
+
+## Documents
+* [Dynamics365HCM]( https://microsoft.sharepoint.com/teams/Dynamics365HCM/Shared%20Documents/Forms/AllItems.aspx)
+* [HCM Arch](https://microsoft.sharepoint.com/:u:/r/teams/Dynamics365HCM/_layouts/15/Doc.aspx?sourcedoc=%7B20405A97-6756-437A-9544-F81E096386C5%7D&file=HCM_Arch.vsdx&action=default)
 
 ## TODO
 * Service Fabric and service app

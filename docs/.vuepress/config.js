@@ -18,6 +18,10 @@ module.exports = {
     docsDir: 'docs',
     editLinks: true,
     editLinkText: 'Edit this page on GitHub',
+    algolia: {
+      apiKey: '76fd6979e786d56dc1673257e175a6c3',
+      indexName: 'padamshrestha'
+    },
     nav: [
       { text: 'Home', link: '/home/' },
       { text: 'About', link: '/about/' },
@@ -61,8 +65,6 @@ module.exports = {
           ],
         },
       ],
-
-
     smoothScroll: true,
   },
   plugins: [
