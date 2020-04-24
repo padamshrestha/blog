@@ -43,7 +43,8 @@ module.exports = {
 
           children: [
             '/home/azure-resource-graph-explorer',
-            '/home/azure-keyboard-shortcuts'
+            '/home/azure-keyboard-shortcuts',
+            '/home/azure-service-fabric'
           ],
         },
         {
