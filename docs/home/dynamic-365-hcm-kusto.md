@@ -62,6 +62,11 @@ ActivityVector provide the sequence of execution for Async calls so it's helpful
 All services are in D365
 :::
 
+## Onboarding
+* https://dynamics.wiki/index.php/HCM_Engineering
+* https://dynamics.wiki/index.php/Security_Groups_and_memberships#XRM_environments
+* https://msazure.visualstudio.com/D365
+
 ## Resources/links
 * https://attract.talent.dev.dynamics.com
 * https://dataexplorer.azure.com/* 

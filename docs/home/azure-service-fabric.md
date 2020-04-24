@@ -38,3 +38,4 @@ Breaking monolithic application into micro services is a lot easier to swallow w
 * [Pluralsight course](https://app.pluralsight.com/library/courses/azure-service-fabric-programming-models/table-of-contents)
 * [Fabric Partitioning](https://github.com/danielmarbach/Microservices.ServiceFabric)
 * [Interception & Custom Headers](https://dev.to/expecho/service-fabric-remoting-interception--custom-headers--3800)
+* [Github docs repo](https://github.com/MicrosoftDocs/azure-docs/tree/master/articles/service-fabric)
