@@ -65,6 +65,14 @@ module.exports = {
             '/csharp/csharp-features'
           ],
         },
+        {
+          title: 'Tools',
+          collapsable: false,
+
+          children: [
+            '/home/chocolatey',
+          ],
+        },
       ],
     smoothScroll: true,
   },

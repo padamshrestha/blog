@@ -1,4 +1,4 @@
-# Install and manage application using chocolatey
+# Install and manage applications using Chocolatey
 
 ## Install Chocolatey
 
