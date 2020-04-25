@@ -34,6 +34,18 @@ Tools:
 :::
 
 ## Creating Service Fabric Services
+### **Service Fabric State**
+The minimum set of replica to achieve data consistency is called quorum. The size is usually 3 nodes. Service state consist of local storage to save persist state therefore is very fast.
+```mermaid
+graph LR
+    w(write) -.-> a(Service - primary)
+    w(write) -.-> b(Replica 1)
+    w(write) -.-> c(Replica 2) 
+    subgraph quorum
+        a(Service - primary) & b(Replica 1) & c(Replica 2) 
+    end
+```
+
 Let's create application with these services
 We will create services
 * Web Server (API) - It's a stateless service and only act as a facade.
@@ -96,6 +108,7 @@ a(Register the Reliable Service) --> b(Log Reliable Service has started) --> c(S
 ```
 
 There is another class get create which ASF creates the instance during run time and this is the entry point for the service.
+**ProductCatalog.cs**
 ```csharp
 using System;
 using System.Collections.Generic;
@@ -218,17 +231,190 @@ classDiagram
     Product : +Availability int
 ```
 
-**Service Fabric State**
-The minimum set of replica to achieve data consistency is called quorum. The size is usually 3 nodes. Service state consist of local storage to save persist state therefore is very fast.
-```mermaid
-graph LR
-    w(write) -.-> a(Service - primary)
-    w(write) -.-> b(Replica 1)
-    w(write) -.-> c(Replica 2) 
-    subgraph quorum
-        a(Service - primary) & b(Replica 1) & c(Replica 2) 
-    end
+Now lets add IProuductRepostory and Product in library project and reference it from ProductCatalog Service project.
+**IProductRepository**
+```csharp
+using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace ECommerce.ProductCatalog.Model
+{
+    public interface IProductRepository
+    {
+        Task<IEnumerable<Product>> GetProducts();
+        Task AddProudct(Product product);
+    }
+}
 ```
+
+**Product**
+```csharp
+using System;
+
+namespace ECommerce.ProductCatalog.Model
+{
+    public class Product
+    {
+        public Guid Id { get; set; }
+        public string Name { get; set; }
+        public string Description { get; set; }
+        public double Price { get; set; }
+        public int Availability { get; set; }
+    }
+}
+```
+
+Let's create ServiceFabricProductRepository nad update ProductCatalog in ProductCatalog project.
+**ServiceFabricProductRepository**
+```csharp
+using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using ECommerce.ProductCatalog.Model;
+using Microsoft.ServiceFabric.Data;
+using Microsoft.ServiceFabric.Data.Collections;
+
+namespace ECommerce.ProductCatalog
+{
+    class ServcieFabricProductRepostiory : IProductRepository
+    {
+        private readonly IReliableStateManager _stateManager;
+
+        public ServcieFabricProductRepostiory(IReliableStateManager stateManager)
+        {
+            _stateManager = stateManager;
+        }
+
+        public async Task AddProudct(Product product)
+        {
+            var products = await _stateManager.GetOrAddAsync<IReliableDictionary<Guid, Product>>("product");
+
+            using (ITransaction tx = _stateManager.CreateTransaction())
+            {
+                await products.AddOrUpdateAsync(tx, product.Id, product, (id, value) => product);
+
+                await tx.CommitAsync();
+            }
+        }
+
+        public async Task<IEnumerable<Product>> GetProducts()
+        {
+            var products = await _stateManager.GetOrAddAsync<IReliableDictionary<Guid, Product>>("product");
+            var result = new List<Product>();
+
+            using (ITransaction tx = _stateManager.CreateTransaction())
+            {
+                var allProducts = await products.CreateEnumerableAsync(tx, EnumerationMode.Unordered);
+
+                using (var enumerator = allProducts.GetAsyncEnumerator())
+                {
+                    while (await enumerator.MoveNextAsync(CancellationToken.None))
+                    {
+                        result.Add(enumerator.Current.Value);
+                    }
+                }
+            }
+
+            return result;
+        }
+    }
+}
+```
+
+**ProductCatalog**
+```csharp
+using System;
+using System.Collections.Generic;
+using System.Fabric;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using ECommerce.ProductCatalog.Model;
+using Microsoft.ServiceFabric.Data.Collections;
+using Microsoft.ServiceFabric.Services.Communication.Runtime;
+using Microsoft.ServiceFabric.Services.Runtime;
+
+namespace ECommerce.ProductCatalog
+{
+    /// <summary>
+    /// An instance of this class is created for each service replica by the Service Fabric runtime.
+    /// </summary>
+    internal sealed class ProductCatalog : StatefulService
+    {
+        private ServcieFabricProductRepostiory _repo;
+        public ProductCatalog(StatefulServiceContext context)
+            : base(context)
+        { }
+
+        /// <summary>
+        /// Optional override to create listeners (e.g., HTTP, Service Remoting, WCF, etc.) for this service replica to handle client or user requests.
+        /// </summary>
+        /// <remarks>
+        /// For more information on service communication, see https://aka.ms/servicefabricservicecommunication
+        /// </remarks>
+        /// <returns>A collection of listeners.</returns>
+        protected override IEnumerable<ServiceReplicaListener> CreateServiceReplicaListeners()
+        {
+            return new ServiceReplicaListener[0];
+        }
+
+        /// <summary>
+        /// This is the main entry point for your service replica.
+        /// This method executes when this replica of your service becomes primary and has write status.
+        /// </summary>
+        /// <param name="cancellationToken">Canceled when Service Fabric needs to shut down this service replica.</param>
+        protected override async Task RunAsync(CancellationToken cancellationToken)
+        {
+            var product1 = new Product
+            {
+                Id = Guid.NewGuid(),
+                Name = "Dell Monitor",
+                Description = " Computer Monitor",
+                Price = 500,
+                Availability = 100
+            };
+
+            var product2 = new Product
+            {
+                Id = Guid.NewGuid(),
+                Name = "Keyboard",
+                Description = " Computer Accesories",
+                Price = 510,
+                Availability = 110
+            };
+
+            var product3 = new Product
+            {
+                Id = Guid.NewGuid(),
+                Name = "Mouse",
+                Description = " Computer Accesories",
+                Price = 520,
+                Availability = 120
+            };
+
+            _repo = new ServcieFabricProductRepostiory(this.StateManager);
+
+            await _repo.AddProudct(product1);
+            await _repo.AddProudct(product2);
+            await _repo.AddProudct(product3);
+
+            var all = await _repo.GetProducts();
+        }
+    }
+}
+```
+At this point we should be able to run the application and check there are 3 products in all variable which is await of GetProducts()
+
+This is how the solution should look like:
+![ECommerce Solution](./../images/ECommerce_Sln.png)
+
+:::warning
+Visual Studio need to run in elevated mode as Admin to allow access network level resources
+:::
 
 ## Exploring Actor Model Support
 
