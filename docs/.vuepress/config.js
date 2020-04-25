@@ -44,7 +44,8 @@ module.exports = {
           children: [
             '/home/azure-resource-graph-explorer',
             '/home/azure-keyboard-shortcuts',
-            '/home/azure-service-fabric'
+            '/home/azure-service-fabric',
+            '/home/starting-azure-service-fabric'
           ],
         },
         {
@@ -84,6 +85,7 @@ module.exports = {
       }
     ],
     '@vuepress/nprogress',
-    '@vuepress/medium-zoom'
+    '@vuepress/medium-zoom',
+    'vuepress-plugin-mermaidjs'
   ]
 };

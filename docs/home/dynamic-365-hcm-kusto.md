@@ -3,7 +3,7 @@
 Kusto Extra MetaData is stored in property bag
 CustomDimentions, ClientEvents, CustomEvent and TraceEvent
 
-```
+```sql
 ClientEvents
 | where Timestamp > todatetime("2019-04-01 20:31:02Z") and Timestamp < todatetime("2019-04-01 20:51:02Z")
 | where Name == "GenericErrorDialog"
@@ -12,23 +12,23 @@ ClientEvents
 | where cd.rootActivity == ""
 ```
 
-```
+```sql
 TraceEvent
 | where ActivityType contains "HcmAttEOL"
 ```
 
-```
+```sql
 ClientEvents
 | where RootActivityId == "" 
 // If there is no output then we can get it from TraceEvent
 ```
 
-```
+```sql
 TraceEvent
 | where RootActivityId = ""
 ```
 
-```
+```sql
 TraceEvent
 | where SessionId == ""
 | project TIMESTAMP, RootActivityId, ActivityType, ActivityVector, TraceLevel, TraceMessage

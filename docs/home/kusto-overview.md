@@ -211,7 +211,7 @@ The let statement can be used in many other useful ways. Such as to create **use
 ### Visualizations
 The render operator can be used to create visualizations. Besides the below example, more types of visualizations are possible. More info can be found [here](https://docs.microsoft.com/en-us/azure/data-explorer/kusto/query/renderoperator?pivots=azuredataexplorer). (Pie charts are not the most telling graphics, but the support for the render operator is limited on the demo environment.)
 
-```
+```sql
 SecurityAlert |
 summarize Count=count() by Alert=strcat(DisplayName,
 " (", toupper(AlertSeverity), ")")
@@ -224,7 +224,7 @@ KQL has the ability to join tables. In this example, we join some of the events 
 This query serves purely as an example to explain the join operator because all
 process data is contained within the column Entities of the SecurityAlert table
 
-```
+```sql
 SecurityAlert |
 extend _ProcessId = extractjson("$.process id",
 ExtendedProperties),

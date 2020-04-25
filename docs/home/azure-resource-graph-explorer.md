@@ -1,7 +1,7 @@
 # Write query using Azure Resource Graph Explorer
 
 Navigate to Azure Resource Graph Explorer and type Kusto query
-```
+```sql
 summarize Count=count() by type
 | order by Count desc
 ```

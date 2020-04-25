@@ -50,8 +50,7 @@ choco install -y visualstudio2017professional --package-parameters="'--add Micro
 
 ::: tip
 supported code block extensions
-[Code block](https://vuepressbook.com/tutorial/tutorial6.html#code-listings-in-markdown-files)
+[Code block types](https://github.com/PrismJS/prism/blob/master/components.json)
 :::
-
 
 
