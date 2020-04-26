@@ -502,7 +502,7 @@ Here is new project structure:
 ![Solution](./../images/ECommerce1_Sln.png)
 
 ### Communicating between two services
-Let's say there are 3 node cluster
+Let's say there are 3 nodes in a cluster
 ```mermaid
 graph LR
     subgraph node3
