@@ -504,7 +504,7 @@ Here is new project structure:
 ### Communicating between two services
 Let's say there are 3 node cluster
 ```mermaid
-graph TB
+graph LR
     subgraph node3
         a(Service API - active) & b(Catalog Service - passive)
     end
@@ -723,6 +723,30 @@ URI Format for proxy:
 fabric/ApplicationName/ServiceName
 Eg: fabric:/ECommerce/ProductCatalog
 :::
+
+### **End to End flow**  
+Here is end to end flow:  
+API: Stateless service  
+ProductsController (Product_API)  
+ProductCatalog: StatefulService, IProductCatalogService  
+```mermaid
+sequenceDiagram
+    participant ProductsController
+    participant ServiceProxyFactory
+    participant ProductCatalog
+    participant SFProductRepository
+    participant IReliableStateManager
+        ProductsController->>ServiceProxyFactory: CreateServiceProxy
+        ServiceProxyFactory-->>ProductsController: _service
+        ProductsController->>ProductCatalog :GetAllProductsAsync()
+        loop new ServiceReplicaListener of ctx
+            ProductCatalog->>ProductCatalog: new FabricTransportServiceRemotingListener
+        end
+        ProductCatalog->>SFProductRepository: GetProducts()
+        SFProductRepository->>IReliableStateManager: products.CreateEnumerableAsync
+        SFProductRepository-->>ProductCatalog: result
+        ProductCatalog-->>ProductsController: result.ToArray()
+```
 
 ## Exploring Actor Model Support
 
