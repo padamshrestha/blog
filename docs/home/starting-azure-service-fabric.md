@@ -416,6 +416,314 @@ This is how the solution should look like:
 Visual Studio need to run in elevated mode as Admin to allow access network level resources
 :::
 
+### Creating a Web API
+To add new Stateless ASP .net Core Web API, right click on ECommerce project and add New Service Fabric Service and choose, stateless asp.net core API.
+![New API](./../images/SF_Create_WebAPI.png)
+
+Program.cs is console application very similar to previous one which resisters the service type.
+
+API
+```csharp{30}
+using System.Collections.Generic;
+using System.Fabric;
+using System.IO;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.ServiceFabric.Services.Communication.AspNetCore;
+using Microsoft.ServiceFabric.Services.Communication.Runtime;
+using Microsoft.ServiceFabric.Services.Runtime;
+
+namespace ECommerce.API
+{
+    /// <summary>
+    /// The FabricRuntime creates an instance of this class for each service type instance. 
+    /// </summary>
+    internal sealed class API : StatelessService
+    {
+        public API(StatelessServiceContext context)
+            : base(context)
+        { }
+
+        /// <summary>
+        /// Optional override to create listeners (like tcp, http) for this service instance.
+        /// </summary>
+        /// <returns>The collection of listeners.</returns>
+        protected override IEnumerable<ServiceInstanceListener> CreateServiceInstanceListeners()
+        {
+            return new ServiceInstanceListener[]
+            {
+                new ServiceInstanceListener(serviceContext =>
+                    new KestrelCommunicationListener(serviceContext, "ServiceEndpoint", (url, listener) =>
+                    {
+                        ServiceEventSource.Current.ServiceMessage(serviceContext, $"Starting Kestrel on {url}");
+
+                        return new WebHostBuilder()
+                                    .UseKestrel()
+                                    .ConfigureServices(
+                                        services => services
+                                            .AddSingleton<StatelessServiceContext>(serviceContext))
+                                    .UseContentRoot(Directory.GetCurrentDirectory())
+                                    .UseStartup<Startup>()
+                                    .UseServiceFabricIntegration(listener, ServiceFabricIntegrationOptions.None)
+                                    .UseUrls(url)
+                                    .Build();
+                    }))
+            };
+        }
+    }
+}
+```
+**KestrelCommunicationListener** is standard fabric listener which bootstrap asp.net core runtime and configure it to run inside service fabric environment.
+
+Let's add Product Api Model
+```csharp
+using System;
+using Newtonsoft.Json;
+
+namespace ECommerce.API.Model
+{
+    public class ApiProduct
+    {
+        [JsonProperty("id")]
+        public Guid Id { get; set; }
+        [JsonProperty("name")]
+        public string Name { get; set; }
+        [JsonProperty("description")]
+        public string Description { get; set; }
+        [JsonProperty("price")]
+        public double Price { get; set; }
+        [JsonProperty("isAvailable")]
+        public int IsAvailable { get; set; }
+    }
+}
+```
+
+Here is new project structure:
+![Solution](./../images/ECommerce1_Sln.png)
+
+### Communicating between two services
+Let's say there are 3 node cluster
+```mermaid
+graph TB
+    subgraph node3
+        a(Service API - active) & b(Catalog Service - passive)
+    end
+    subgraph node2
+        c(Service API - active) & d(Catalog Service - active)
+    end
+    subgraph node1
+        e(Service API - active) & f(Catalog Service - passive)
+    end
+```
+Since API are stateless they are active in all nodes but Catalog Service is stateful so Service Fabric makes one active and other two passive in case of fail over.
+
+:::tip
+Never assume a service is running in a fixed location. Services in Service Fabric can move around and change roles all the time during the lifetime of the application and even between requests. Therefore, before making the request we should always query the service location from Service Fabric runtime.
+:::
+
+Service Fabric is protocol agnostic. Out of the box there are three protocols:
+* WCF
+* HTTP
+* Service Remoting (Default protocol for reliable communication)
+
+Benefits of using Service Remoting:
+* Automatic service address resolution
+* Establishing connection
+* Retries
+* Error handling
+* Strong typed
+* Fast
+
+For the purpose of remoting we are adding Service interface in the Model
+**IProductCatalogService**
+```csharp
+using System.Threading.Tasks;
+using Microsoft.ServiceFabric.Services.Remoting;
+
+namespace ECommerce.ProductCatalog.Model
+{
+    public interface IProductCatalogService: IService
+    {
+        Task<Product[]> GetALlProductsAsync();
+        Task AddProductAsync(Product product);
+    }
+}
+```
+We need to install the remoting service library.
+![Remoting service library](./../images/SF_Add_Remoting_Service_lib.png)
+
+And implement IProductCatalogService in ProductCatalog
+```csharp{24-32,43-46}
+using System;
+using System.Collections.Generic;
+using System.Fabric;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using ECommerce.ProductCatalog.Model;
+using Microsoft.ServiceFabric.Services.Communication.Runtime;
+using Microsoft.ServiceFabric.Services.Remoting.V2.FabricTransport.Runtime;
+using Microsoft.ServiceFabric.Services.Runtime;
+
+namespace ECommerce.ProductCatalog
+{
+    /// <summary>
+    /// An instance of this class is created for each service replica by the Service Fabric runtime.
+    /// </summary>
+    internal sealed class ProductCatalog : StatefulService, IProductCatalogService
+    {
+        private ServiceFabricProductRepository _repo;
+        public ProductCatalog(StatefulServiceContext context)
+            : base(context)
+        { }
+
+        public async Task AddProductAsync(Product product)
+        {
+            await _repo.AddProduct(product);
+        }
+
+        public async Task<Product[]> GetALlProductsAsync()
+        {
+            return (await _repo.GetProducts()).ToArray();
+        }
+
+        /// <summary>
+        /// Optional override to create listeners (e.g., HTTP, Service Remoting, WCF, etc.) for this service replica to handle client or user requests.
+        /// </summary>
+        /// <remarks>
+        /// For more information on service communication, see https://aka.ms/servicefabricservicecommunication
+        /// </remarks>
+        /// <returns>A collection of listeners.</returns>
+        protected override IEnumerable<ServiceReplicaListener> CreateServiceReplicaListeners()
+        {
+            return new[]
+            {
+                new ServiceReplicaListener(context => new FabricTransportServiceRemotingListener(context, this))
+            };
+        }
+
+        /// <summary>
+        /// This is the main entry point for your service replica.
+        /// This method executes when this replica of your service becomes primary and has write status.
+        /// </summary>
+        /// <param name="cancellationToken">Canceled when Service Fabric needs to shut down this service replica.</param>
+        protected override async Task RunAsync(CancellationToken cancellationToken)
+        {
+            var product1 = new Product
+            {
+                Id = Guid.NewGuid(),
+                Name = "Dell Monitor",
+                Description = " Computer Monitor",
+                Price = 500,
+                Availability = 100
+            };
+
+            var product2 = new Product
+            {
+                Id = Guid.NewGuid(),
+                Name = "Keyboard",
+                Description = " Computer Accessories",
+                Price = 510,
+                Availability = 110
+            };
+
+            var product3 = new Product
+            {
+                Id = Guid.NewGuid(),
+                Name = "Mouse",
+                Description = " Computer Accessories",
+                Price = 520,
+                Availability = 120
+            };
+
+            _repo = new ServiceFabricProductRepository(this.StateManager);
+
+            await _repo.AddProduct(product1);
+            await _repo.AddProduct(product2);
+            await _repo.AddProduct(product3);
+
+            var all = await _repo.GetProducts();
+        }
+    }
+}
+```
+
+:::tip
+The return type must be array as the service remoting doesn't understand IEnumerable and it needs to transform over the networks it should be simple type.
+:::
+
+Finally it's time to add proxy in API to connect to ProductCatalogService.
+**ProductController**
+```csharp{20-28,33-42,48-57}
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using ECommerce.API.Model;
+using ECommerce.ProductCatalog.Model;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.ServiceFabric.Services.Client;
+using Microsoft.ServiceFabric.Services.Remoting.Client;
+using Microsoft.ServiceFabric.Services.Remoting.V2.FabricTransport.Client;
+
+namespace ECommerce.API.Controllers
+{
+    [ApiController]
+    [Route("[controller]")]
+    public class ProductsController : ControllerBase
+    {
+        private readonly IProductCatalogService _service;
+
+        public ProductsController()
+        {
+            var proxyFactory = new ServiceProxyFactory(
+                c => new FabricTransportServiceRemotingClientFactory());
+
+            _service = proxyFactory.CreateServiceProxy<IProductCatalogService>(
+                new Uri("fabric:/ECommerce/ECommerce.ProductCatalog"),
+                new ServicePartitionKey(0));
+        }
+
+        [HttpGet]
+        public async Task<IEnumerable<ApiProduct>> GetAsync()
+        {
+            var allProducts = await _service.GetAllProductsAsync();
+
+            return allProducts.Select(p => new ApiProduct
+            {
+                Id = p.Id,
+                Name = p.Name,
+                Description = p.Description,
+                Price = p.Price,
+                IsAvailable = p.Availability > 0
+            });
+        }
+
+        [HttpPost]
+        public async Task PostAsync([FromBody] ApiProduct product)
+        {
+            var newProduct = new Product()
+            {
+                Id = Guid.NewGuid(),
+                Name = product.Name,
+                Description = product.Description,
+                Price = product.Price,
+                Availability = 100
+            };
+
+            await _service.AddProductAsync(newProduct);
+        }      
+    }
+}
+```
+Lunch the application and test it with Postman for both get and post.
+
+:::tip
+URI Format for proxy:
+fabric/ApplicationName/ServiceName
+Eg: fabric:/ECommerce/ProductCatalog
+:::
+
 ## Exploring Actor Model Support
 
 ## Managing State

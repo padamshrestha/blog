@@ -51,6 +51,8 @@ choco install -y visualstudio2017professional --package-parameters="'--add Micro
 ::: tip
 supported code block extensions
 [Code block types](https://github.com/PrismJS/prism/blob/master/components.json)
+supported diagrams
+[MermaidJS](https://mermaid-js.github.io/mermaid/#/examples)
 :::
 
 

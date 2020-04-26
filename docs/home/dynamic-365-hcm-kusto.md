@@ -72,6 +72,19 @@ All services are in D365
 * https://dataexplorer.azure.com/* 
 * https://kusto.azurewebsites.net/docs/
 
+## Apps
+[Onboard](https://onboard.talent.dev.dynamics.com/dashboard)
+[Offer](https://offer.talent.dev.dynamics.com/offers)
+[Attract](https://attract.talent.dev.dynamics.com/environments)
+
+## Tools
+[Repo](https://msazure.visualstudio.com/d365)
+[Data Explorer web](https://dataexplorer.azure.com/clusters/dynamicshcmint/databases/HCMServicesLogsINT)
+
+## Kusto Environments
+Connection: https://dynamicshcmint.kusto.windows.net
+Connection: https://dynamicshcmint.kusto.windows.net
+
 ## Documents
 * [Dynamics365HCM]( https://microsoft.sharepoint.com/teams/Dynamics365HCM/Shared%20Documents/Forms/AllItems.aspx)
 * [HCM Arch](https://microsoft.sharepoint.com/:u:/r/teams/Dynamics365HCM/_layouts/15/Doc.aspx?sourcedoc=%7B20405A97-6756-437A-9544-F81E096386C5%7D&file=HCM_Arch.vsdx&action=default)

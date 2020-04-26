@@ -87,5 +87,8 @@ module.exports = {
     '@vuepress/nprogress',
     '@vuepress/medium-zoom',
     'vuepress-plugin-mermaidjs'
-  ]
+  ],
+  markdown: {
+    lineNumbers: true
+  }
 };
